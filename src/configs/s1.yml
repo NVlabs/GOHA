@@ -1,0 +1,62 @@
+# Parameters to setup experiment.
+experiment:
+  # Unique experiment identifier
+  id: s1 
+  # Experiment logs will be stored at "logdir"/"id"
+  logdir: logs/
+  # Seed for random number generators (for repeatability).
+  randomseed: 42  # Cause, why not?
+  # Number of training iterations.
+  train_iters: 695000 
+  # Number of training iterations after which to validate.
+  validate_every: 100
+  # Number of training iterations after which to checkpoint.
+  save_every: 5000
+  # Number of training iterations after which to print progress.
+  print_every: 100
+  device: 0
+  parsing_path: ../external/face-parsing/79999_iter.pth
+  add_expr_plane: 120000
+  add_id_plane: 240000
+  add_gan: 695000
+  batch_size: 1
+  freeze_cano: 0
+  grad_clip_norm: 1000
+
+weights:
+  r1: 10
+  rec_loss_weight: 1.0
+  TV_weight: 0.25
+  neutral_weight: 3.0
+
+# Dataset parameters.
+dataset:
+  ffhq_path: /raid/ffhq_3DMM
+  image_path: /raid/synthetic_processed
+  video_path: /raid/celebvhq_3DMM
+  ravdess_path: /raid/RAVDESS_3DMM
+  # Near clip plane (clip all depth values closer than this threshold).
+  near: 0.0
+  # Far clip plane (clip all depth values farther than this threshold).
+  far: 1.0
+
+# Model parameters.
+models:
+  render_resolution: 224
+  model_file: model_s1
+
+# Optimizer params.
+optimizer:
+  # Name of the torch.optim class used for optimization.
+  type: Adam
+  # Learning rate.
+  glr: 1.0E-4
+  dlr: 1.0E-4
+  dlr_init: 1.0E-4
+
+# Learning rate schedule.
+scheduler:
+  # Exponentially decay learning rate (in 1000 steps)
+  lr_decay: 250
+  # Rate at which to apply this decay.
+  lr_decay_factor: 0.1
