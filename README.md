@@ -55,7 +55,7 @@ Run the one-shot animation demo by:
 cd src
 python demo.py --config configs/s2.yml --checkpoint logs/s3/checkpoint825000.ckpt --savedir /raid/test --source_path /raid/goha_demo_data/celeba/ --target_path /raid/goha_demo_data/HDTF/
 ```
-The `--source_path` points to the source image while the `--target_path` points to the drive video path. Animation results are saved in `--savedir`.
+The `--source_path` points to the source image while the `--target_path` points to the drive video path. Animation video will be saved in `--savedir`. Including `--frame_limit 100` in the command enables a fast test on the first 100 frames.
 </details>
 
 ## Testing on the CelebA dataset
@@ -77,7 +77,7 @@ Follow these [instructions](https://github.com/NVlabs/GOHA/blob/master/docs/data
 
 To carry out cross-identity animation, run
   ```
-  python test_celeba_cross.py --config configs/s2.yml logs/s3/checkpoint825000.ckpt --savedir /raid/results/celeba_cross
+  python test_celeba_cross.py --config configs/s2.yml --checkpoint logs/s3/checkpoint825000.ckpt --savedir /raid/results/celeba_cross
   ```
   `test_sample_number` indicates testing image number, the defualt number will run on all image pairs in the CelebA dataset.
 </details>
@@ -91,6 +91,7 @@ We use [torch-fidelty](https://github.com/toshas/torch-fidelity) for FID score c
 ## Training
 <details>
 <summary> Training dataset preparation </summary>
+
 Please follow [these instructions](https://github.com/NVlabs/GOHA/blob/master/docs/dataset_preprocessing.md#training-data-pre-processing).
 </details>
 

@@ -9,10 +9,6 @@
 # its affiliates is strictly prohibited.
 
 import torch
-from eg3d_modules.torch_utils.ops import bias_act
-from eg3d_modules.torch_utils.ops import upfirdn2d
-x = bias_act.bias_act(torch.zeros(1, 256).cuda(), torch.zeros(256).cuda(), act='lrelu')
-img = upfirdn2d.upsample2d(torch.zeros(1, 3, 64, 64).cuda(), torch.tensor([1,3,3,1]).cuda().float())
 
 import os
 import sys
@@ -27,10 +23,10 @@ os.environ['GPU_DEBUG']='3'
 import torchvision.utils as vutils
 import torch.nn.functional as F
 
-from nerf import CfgNode
+from utils.cfgnode import CfgNode
 
 import importlib
-from dataset.EG3DDatasetMultiImageMatting import ImageFolderDataset as ImageDataset
+from dataset.Dataset import ImageFolderDataset as ImageDataset
 
 import PIL.Image
 
