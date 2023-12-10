@@ -48,11 +48,12 @@ class Tester():
         self.savedir = configargs.savedir
 
         self.transfer_pose = (configargs.transfer_pose == 1)
+        self.celeba_path = configargs.celeba_path
 
     def load_dataset(self):
         cfg = self.cfg
         device = cfg.device
-        self.image_dataset = ImageDataset(path = '/raid/celeba', resolution = 512)
+        self.image_dataset = ImageDataset(path = self.celeba_path, resolution = 512)
         self.image_loader_ = torch.utils.data.DataLoader(dataset     = self.image_dataset,
                                                          batch_size  = 1,
                                                          num_workers = 4,
@@ -157,6 +158,9 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--config", type=str, required=True, help="Path to (.yml) config file."
+    )
+    parser.add_argument(
+        "--celeba_path", type=str, default="/raid/celeba/", help="Path to processed CelebA dataset."
     )
     parser.add_argument(
         "--checkpoint",

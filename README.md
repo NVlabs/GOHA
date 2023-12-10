@@ -50,12 +50,12 @@ Download the pre-trained model from [google drive](https://drive.google.com/file
 <details>
 <summary> Run the animation demo </summary>
 
-Run the one-shot animation demo by:
+Assuming that the path of the downloaded demo data is `/raid/goha_demo_data`, the one-shot animation demo can be run by:
 ```
 cd src
 python demo.py --config configs/s2.yml --checkpoint logs/s3/checkpoint825000.ckpt --savedir /raid/test --source_path /raid/goha_demo_data/celeba/ --target_path /raid/goha_demo_data/HDTF/
 ```
-The `--source_path` points to the source image while the `--target_path` points to the drive video path. Animation video will be saved in `--savedir`. Including `--frame_limit 100` in the command enables a fast test on the first 100 frames.
+The `--source_path` points to the source image while the `--target_path` points to the drive video path, please change them according to where save the downloaded demo data. Animated video will be saved in `--savedir`. Including `--frame_limit 100` in the command enables a fast test on the first 100 frames.
 </details>
 
 ## Testing on the CelebA dataset
@@ -77,15 +77,26 @@ Follow these [instructions](https://github.com/NVlabs/GOHA/blob/master/docs/data
 
 To carry out cross-identity animation, run
   ```
-  python test_celeba_cross.py --config configs/s2.yml --checkpoint logs/s3/checkpoint825000.ckpt --savedir /raid/results/celeba_cross
+  python test_celeba_cross.py --config configs/s2.yml --celeba_path /raid/celeba --checkpoint logs/s3/checkpoint825000.ckpt --savedir /raid/results/celeba_cross
   ```
-  `test_sample_number` indicates testing image number, the defualt number will run on all image pairs in the CelebA dataset.
+  `--celeba_path` is the path of the processed CelebA dataset, `--test_sample_number` indicates testing image number, the defualt number will run on all image pairs in the CelebA dataset.
 </details>
 
 <details>
 <summary> Metrics computation </summary>
 
-We use [torch-fidelty](https://github.com/toshas/torch-fidelity) for FID score computation and [this script from NeRFace](https://github.com/gafniguy/4D-Facial-Avatars/blob/main/nerface_code/nerf-pytorch/nerf/metrics.py) for LPIPS, PSNR, SSIM and L1 metrics. We use [ArcFace](https://github.com/ronghuaiyang/arcface-pytorch) to evaluate CSIM, [Deep3DFaceRecon_pytorch](https://github.com/sicxu/Deep3DFaceRecon_pytorch) for AED, APD, and AKD.
+- We use [torch-fidelty](https://github.com/toshas/torch-fidelity) for FID score computation:
+  ```
+  pip install torch-fidelity
+  fidelity --gpu 0 --input1 /raid/results/celeba_cross/source/ --input2 /raid/results/celeba_cross/low_res/ --fid
+  ```
+
+- We use [this script from NeRFace](https://github.com/gafniguy/4D-Facial-Avatars/blob/main/nerface_code/nerf-pytorch/nerf/metrics.py) for LPIPS, PSNR, SSIM and L1 metrics:
+  ```
+  python metrics.py --gt_path /raid/results/celeba_cross/source/ --images_path /raid/results/celeba_cross/low_res/
+  ```
+
+- We use [ArcFace](https://github.com/ronghuaiyang/arcface-pytorch) to evaluate CSIM and [Deep3DFaceRecon_pytorch](https://github.com/sicxu/Deep3DFaceRecon_pytorch) for AED, APD, and AKD.
 </details>
 
 ## Training
