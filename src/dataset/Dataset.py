@@ -42,7 +42,6 @@ class ImageFolderDataset(torch.utils.data.Dataset):
         self.inverse_meta = {}
         self._all_fnames = []
         self._all_poses = []
-        self._all_exps = []
         PIL.Image.init()
         for i, video_path in enumerate(self._all_videos):
             img_list = glob(os.path.join(video_path, 'images', '*.png'))
@@ -51,29 +50,22 @@ class ImageFolderDataset(torch.utils.data.Dataset):
                 labels = json.load(f)['labels']
             label_dict = {}
             for label in labels:
-                label_dict[label[0]] = [label[1], label[2]]
+                label_dict[label[0]] = [label[1]]
             fnames = []
             poses = []
             exps = []
-            #for j, img_path in enumerate(img_list):
-            for j, (img_name, [pose, exp]) in enumerate(natsort.natsorted(label_dict.items())):
+            for j, (img_name, [pose]) in enumerate(natsort.natsorted(label_dict.items())):
+                # EG3D pre-processing code automatically creates mirrored image, which we do not use here, so skip
+                if '_mirror' in img_name:
+                    continue
                 fnames.append(os.path.join(video_path, 'images', img_name.replace(".jpg", ".png")))
-                #poses.append(np.array(labels[j][1]))
-                #img_name = img_path.split("/")[-1]
-                #try:
-                #    poses.append(np.array(label_dict[img_name.replace(".png", ".jpg")]))
-                #except:
-                #    import pdb; pdb.set_trace()
-                #    print(img_path)
                 poses.append(np.array(pose))
-                exps.append(np.array(exp))
                 self.meta[self._frame_num] = "{}, {}".format(self._video_num, j) # record frame in video i and frame j
                 self.inverse_meta["{},{}".format(self._video_num, j)] = self._frame_num
                 self._frame_num += 1
             self._video_num += 1
             self._all_poses.append(poses)
             self._all_fnames.append(fnames)
-            self._all_exps.append(exps)
 
         print("Found {} videos with {} frames in total.".format(self._video_num, self._frame_num))
         self._resolution = resolution
@@ -94,8 +86,6 @@ class ImageFolderDataset(torch.utils.data.Dataset):
         return image
 
     def _load_parsing_image(self, parsing_path):
-        #parsing = cv2.imread(parsing_path)
-        #mask = ((parsing[..., 0] == 0) & (parsing[..., 1] == 255) & (parsing[..., 2] == 0)) + ((parsing[..., 0] == 255) & (parsing[..., 1] == 0) & (parsing[..., 2] == 0))
         mask = PIL.Image.open(parsing_path)
         mask = np.asarray(mask) / 255.0
         return mask
@@ -105,7 +95,6 @@ class ImageFolderDataset(torch.utils.data.Dataset):
         ids = meta.split(",")
         video_id = int(ids[0])
         frame_id = int(ids[1])
-        exp = self._all_exps[video_id][frame_id]
         fname = self._all_fnames[video_id][frame_id]
         image = self._load_raw_image(fname)
         parsing_path = fname.replace("images", "matting")
@@ -122,11 +111,14 @@ class ImageFolderDataset(torch.utils.data.Dataset):
             random_video_id = int(np.random.choice(self._video_num, size = 1))
         random_frame_id = int(np.random.choice(len(self._all_fnames[random_video_id]), size = 1))
         pose_random = torch.from_numpy(self._all_poses[random_video_id][random_frame_id]).float()
-        exp_random = self._all_exps[random_video_id][int(random_frame_id)]
         pose_random_image = self._load_raw_image(self._all_fnames[random_video_id][int(random_frame_id)])
         pose_random_parsing_path = self._all_fnames[random_video_id][int(random_frame_id)].replace("images", "matting")
         pose_random_mask = self._load_parsing_image(pose_random_parsing_path)
         pose_random_image_masked = pose_random_image * pose_random_mask.reshape(1, pose_random_mask.shape[0], pose_random_mask.shape[1])
+
+        # TODO: legacy code to keep return values neat, should be thrown away across all related files.
+        exp = pose_random
+        exp_random = pose_random
 
         return image_masked, pose_target, image_masked, pose_target, pose_random, exp, exp, fname, pose_random_image_masked, exp_random, mask
 

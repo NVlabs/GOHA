@@ -27,10 +27,12 @@
   - Now the `/raid/test` folder should include all files needed for test like this:
     ```
     - test
-      - images
-      - matting
-      - dataset.json
+      data
+        - images
+        - matting
+        - dataset.json
     ```
+    Note there is a subfolder `data` under `test`.
   - You can run our demo on the processed image as:
     ```
     cd goha/src

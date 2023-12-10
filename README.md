@@ -20,7 +20,7 @@ If you find our work useful in your research, please cite:
 ```
 
 ## Environment Setup
-Our training is carried out on 8 V100 32GB GPUs, while testing can be run on a single V100 16GB GPU. We develop our code on Ubuntu 18.04.5, with GPU driver version 535.54.03 and CUDA 11.3.
+Our training is carried out on 8 V100 32GB GPUs, while testing can be run on a single V100 16GB GPU (Inference needs about 9GB GPU memory). We developed our code on Ubuntu 18.04.5, with GPU driver version 535.54.03 and CUDA 11.3.
 
 <details>
 <summary> Package Installation </summary>
@@ -31,14 +31,14 @@ Install all packages by `sh install.sh`.
 <details>
 <summary> Dependency Modules </summary>
 
-Please see [here]() for instructions.
+Please see [here](https://github.com/NVlabs/GOHA/blob/master/docs/external.md) for instructions.
 </details>
 
 ## Demo
 <details>
 <summary> Demo data download </summary>
 
-We provide pre-processed demo data including a single-view portrait image from [CelebA](https://mmlab.ie.cuhk.edu.hk/projects/CelebA.html) and a drive video from [NeRFace](https://gafniguy.github.io/4D-Facial-Avatars/). It can be downloaded [here](https://drive.google.com/file/d/18WknUovVO4v-Z9_hNl63LzQkAHEhd6oL/view?usp=sharing). The `celeba` folder includes the source portrait image while the `person_2_test` folder contains the drive video. To test on your own images, please preprocess the data following dataset preprocessing instructions in the [Training]() section.
+We provide pre-processed demo data including a single-view portrait image from [CelebA](https://mmlab.ie.cuhk.edu.hk/projects/CelebA.html) and a drive video from [HDTF](https://github.com/universome/HDTF). It can be downloaded [here](https://drive.google.com/file/d/18WknUovVO4v-Z9_hNl63LzQkAHEhd6oL/view?usp=sharing). The `celeba` folder includes the source portrait image while the `HDTF` folder contains the drive video. To test on your own images, please preprocess the data following dataset preprocessing [instructions](https://github.com/NVlabs/GOHA/blob/master/docs/dataset_preprocessing.md).
 </details>
 
 <details>
@@ -53,7 +53,7 @@ Download the pre-trained model from [google drive](https://drive.google.com/file
 Run the one-shot animation demo by:
 ```
 cd src
-python demo.py --config configs/s2.yml --checkpoint logs/s3/checkpoint825000.ckpt --savedir output --source_path ../goha_demo_data/celeba/ --target_path ../goha_demo_data/person_2_test/
+python demo.py --config configs/s2.yml --checkpoint logs/s3/checkpoint825000.ckpt --savedir /raid/test --source_path /raid/goha_demo_data/celeba/ --target_path /raid/goha_demo_data/HDTF/
 ```
 The `--source_path` points to the source image while the `--target_path` points to the drive video path. Animation results are saved in `--savedir`.
 </details>
@@ -62,7 +62,7 @@ The `--source_path` points to the source image while the `--target_path` points 
 <details>
 <summary> CelebA pre-processing </summary>
 
-Follow these [instructions] to process the [CelebA]() dataset. The processed dataset has the structure below, where `images` include cropped portrait image, `matting` include foreground masks predicted by MODNet and `dataset.json` includes camera views for each portrait.
+Follow these [instructions](https://github.com/NVlabs/GOHA/blob/master/docs/dataset_preprocessing.md) to process the [CelebA](https://mmlab.ie.cuhk.edu.hk/projects/CelebA.html) dataset. The processed dataset has the structure below, where `images` include cropped portrait image, `matting` include foreground masks predicted by MODNet and `dataset.json` includes camera views for each portrait.
   ```
   - celeba
     - celeba
@@ -91,7 +91,7 @@ We use [torch-fidelty](https://github.com/toshas/torch-fidelity) for FID score c
 ## Training
 <details>
 <summary> Training dataset preparation </summary>
-Please see [here]().
+Please follow [these instructions](https://github.com/NVlabs/GOHA/blob/master/docs/dataset_preprocessing.md#training-data-pre-processing).
 </details>
 
 <details>
