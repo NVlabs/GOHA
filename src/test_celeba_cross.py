@@ -87,7 +87,7 @@ class Tester():
         data = {}
         device = self.cfg.device
         try:
-            img_target, pose_target, img_src, pose_src, pose_random, exp_target, exp_src, name, img_random, exp_random, matting_mask = self.image_loader.next()
+            img_target, pose_target, img_src, pose_src, pose_random, exp_target, exp_src, name, img_random, exp_random, matting_mask = next(self.image_loader)
         except StopIteration:
             return None
 
@@ -107,7 +107,7 @@ class Tester():
         matting_path = name[0].replace('images', 'matting')
         matting_mask = PIL.Image.open(matting_path)
         matting_mask = np.asarray(matting_mask) / 255.0
-        data['matting'] = torch.from_numpy(matting_mask).view(1, 1, matting_mask.shape[-2], matting_mask.shape[-1])
+        data['matting'] = torch.from_numpy(matting_mask).to(device).to(torch.float32).view(1, 1, matting_mask.shape[-2], matting_mask.shape[-1])
         return data
 
     def test_step(self, iteration):
@@ -140,9 +140,9 @@ class Tester():
                     low_res = outputs['target_rec']
             low_res = (low_res * 127.5 + 128).clamp(0, 255)
 
-        out_path = os.path.join(self.savedir, "target/{}.png".format(src_img_name))
+        out_path = os.path.join(self.savedir, "target/{}.png".format(tar_img_name))
         vutils.save_image((data['img_target'] + 1) / 2.0, out_path)
-        out_path = os.path.join(self.savedir, "source/{}.png".format(tar_img_name))
+        out_path = os.path.join(self.savedir, "source/{}.png".format(src_img_name))
         vutils.save_image((data['img_src'] + 1) / 2.0, out_path)
         out_path = os.path.join(self.savedir, "low_res/{}_{}.png".format(src_img_name, tar_img_name))
         vutils.save_image(low_res[:1]/255.0, out_path)
